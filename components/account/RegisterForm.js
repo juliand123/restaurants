@@ -3,8 +3,11 @@ import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 import { size } from 'lodash'
+import { useNavigation } from '@react-navigation/native'
 
 import { validateEmail } from '../../utils/helpers'
+import { registerUser } from '../../utils/actions'
+import Loading from '../Loading'
 
 
 export default function RegisterForm() {
@@ -13,18 +16,29 @@ export default function RegisterForm() {
     const [errorEmail, setErrorEmail] = useState("")
     const [errorPassword, setErrorPassword] = useState("")
     const [errorConfirm, setErrorConfirm] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    const navigation = useNavigation()
 
     const onChange = (e, type) => {
         setFormData({ ...formData, [type]: e.nativeEvent.text })
-    
+
     }
 
-    const registerUser = () => {
+    const doRegisterUser = async () => {
         if (!validateData()) {
             return;
         }
-        console.log(" Fuck yeah!!")
+        setLoading(true)
+        const result = await registerUser(formData.email, formData.password)
+        setLoading(false)
+        if (!result.statusResponse) {
+            setErrorEmail(result.error)
+            return
+        }
+        navigation.navigate("account")
     }
+
 
     const validateData = () => {
         setErrorConfirm("")
@@ -37,19 +51,16 @@ export default function RegisterForm() {
             isValid = false
         }
 
-        if(size(formData.password) <6 )
-        {
+        if (size(formData.password) < 6) {
             setErrorPassword("Debes ingresar una contraseña de al menos 6 caracteres")
             isValid = false
         }
-        if(size(formData.confirm) <6 )
-        {
+        if (size(formData.confirm) < 6) {
             setErrorConfirm("Debes ingresar una confirmación de contraseña de al menos 6 caracteres")
             isValid = false
         }
 
-        if(formData.password !== formData.confirm)
-        {
+        if (formData.password !== formData.confirm) {
             setErrorPassword("Las contraseña y la confirmación no coinciden")
             setErrorConfirm("Las contraseña y la confirmación no coinciden")
             isValid = false
@@ -106,8 +117,9 @@ export default function RegisterForm() {
                 title="Registrar Nuevo Usuario"
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
-                onPress={() => registerUser()}
+                onPress={() => doRegisterUser()}
             />
+            <Loading isVisible={loading} text="Creando cuenta..."/>
         </View>
     )
 }
