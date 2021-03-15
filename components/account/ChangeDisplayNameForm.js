@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash'
 import { updateProfile } from '../../utils/actions'
 
 export default function ChangeDisplayNameForm({ displayName, setShowModal, toastRef, setReloadUser }) {
-    const [newDisplayName, setNewDisplayName] = useState(null)
+    const [newDisplayName, setNewDisplayName] = useState(displayName)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
 
