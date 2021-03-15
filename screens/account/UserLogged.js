@@ -11,17 +11,19 @@ import AccountOptions from '../../components/account/AccountOptions'
 
 export default function UserLogged() {
 
-    const toasRef = useRef()
+    const toastRef = useRef()
     const navigation = useNavigation()
 
     const [loading, setLoading] = useState(false)
     const [loadingText, setLoadingText] = useState("")
     const [user, setUser] = useState(null)
 
-    useEffect(() => {
+    const [reloadUser, setReloadUser] = useState(false)
 
+    useEffect(() => {
         setUser(getCurrentUser())
-    }, [])
+        setReloadUser(false)
+    }, [reloadUser])
 
 
     return (
@@ -36,8 +38,8 @@ export default function UserLogged() {
                         />
                         <AccountOptions
                             user={user}
-                            toasRef={toasRef}
-
+                            toastRef={toastRef}
+                            setReloadUser={setReloadUser}
                         />
                     </View>
                 )
@@ -52,7 +54,7 @@ export default function UserLogged() {
                     navigation.navigate("restaurants")
                 }}
             />
-            <Toast ref={toasRef} position="center" opacity={0.9} />
+            <Toast ref={toastRef} position="center" opacity={0.9} />
             <Loading isVisible={loading} text={loadingText} />
 
         </View>

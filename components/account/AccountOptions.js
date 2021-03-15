@@ -5,7 +5,7 @@ import { map } from 'lodash'
 import Modal from '../Modal'
 import ChangeDisplayNameForm from './ChangeDisplayNameForm'
 
-export default function AccountOptions({ user, toastRef }) {
+export default function AccountOptions({ user, toastRef, setReloadUser }) {
 
 
     const [showModal, setShowModal] = useState(false)
@@ -49,6 +49,7 @@ export default function AccountOptions({ user, toastRef }) {
                     displayName = {user.displayName}
                     setShowModal = {setShowModal} 
                     toastRef = {toastRef}
+                    setReloadUser = {setReloadUser}
                     />
                 )
                 break;

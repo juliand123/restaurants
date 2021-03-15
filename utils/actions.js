@@ -64,6 +64,7 @@ export const updateProfile = async (data) => {
     const result = { statusResponse: true, error: null }
  try {
      await firebase.auth().currentUser.updateProfile(data)
+    
  } catch (error) {
      result.statusResponse = false
      result.error = error

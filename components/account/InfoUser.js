@@ -49,7 +49,7 @@ export default function InfoUser({ user, setLoading, setLoadingText }) {
             <View styles={styles.infoUser}>
                 <Text>
                     {
-                        user.displayname ? user.displayname : "Anónimo"
+                        user.displayName ? user.displayName : "Anónimo"
                     }
                 </Text>
                 <Text style={styles.displayname}>
