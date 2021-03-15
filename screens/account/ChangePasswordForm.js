@@ -3,8 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 import { isEmpty, size } from 'lodash'
 
-import { reauthenticate, updateEmail } from '../../utils/actions'
-import { validateEmail } from '../../utils/helpers'
+import { reauthenticate, updatePassword } from '../../utils/actions'
 
 export default function ChangePasswordForm({ setShowModal, toastRef }) {
     const [newPassword, setNewPassword] = useState(null)
@@ -22,25 +21,24 @@ export default function ChangePasswordForm({ setShowModal, toastRef }) {
             return
         }
 
-        // setLoading(true)
-        // const resultReauthenticate = await reauthenticate(password)
-        // if (!resultReauthenticate.statusResponse) {
-        //     setLoading(false)
-        //     setErrorPassword("Contraseña incorrecta.")
-        //     return
-        // }
+        setLoading(true)
+        const resultReauthenticate = await reauthenticate(curretPassword)
+        if (!resultReauthenticate.statusResponse) {
+            setLoading(false)
+            setErrorCurretPassword("Contraseña incorrecta.")
+            return
+        }
 
-        // const resultUpdateEmail = await updateEmail(newEmail)
-        // setLoading(false)
+        const resultUpdatePassword = await updatePassword(newPassword)
+        setLoading(false)
 
-        // if (!resultUpdateEmail.statusResponse) {
-        //     setErrorEmail("No se puede cambiar por este correo, ya esta en uso por otro usuario.")
-        //     return
-        // }
+        if (!resultUpdatePassword.statusResponse) {
+            setErrorNewPassword("Hubo un problema cambiando la contraseña, por favor intente mas tarde.")
+            return
+        }
 
-        // setReloadUser(true)
-        // toastRef.current.show("Se ha actualizado el email.", 3000)
-        // setShowModal(false)
+        toastRef.current.show("Se ha actualizado la contraseña.", 3000)
+        setShowModal(false)
     }
 
     const validateForm = () => {
