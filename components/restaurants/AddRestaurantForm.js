@@ -4,14 +4,30 @@ import { Button, Input } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
 
 export default function AddRestaurantForm({ toastRef, setLoading, navigation }) {
+    const [formData, setFormData] = useState(defaultFormValues())
+
+    const [errorName, setErrorName] = useState(null)
+    const [errorDescription, setErrorDescription] = useState(null)
+    const [errorEmail, setErrorEmail] = useState(null)
+    const [errorPhone, setErrorPhone] = useState(null)
+    const [errorAddress, setErrorAddress] = useState(null)
 
     const addRestaurant = () => {
+        console.log(formData)
         console.log("fuck yea")
     }
 
     return (
         <View style={styles.viewContainer}>
-            <FormAdd />
+            <FormAdd
+                formData={formData}
+                setFormData={setFormData}
+                errorName={errorName}
+                errorDescription={errorDescription}
+                errorEmail={errorEmail}
+                errorPhone={errorPhone}
+                errorAddress={errorAddress}
+            />
             <Button
                 title="Crear Restaurante"
                 onPress={addRestaurant}
@@ -21,22 +37,35 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
     )
 }
 
-function FormAdd() {
+function FormAdd({ formData, setFormData, errorName, errorDescription, errorEmail, errorAddress, errorPhone }) {
     const [country, setCountry] = useState("CO")
     const [callingCode, setCallingCode] = useState("57")
     const [phone, setPhone] = useState("")
+
+    const onChange = (e, type) => {
+        setFormData({ ...formData, [type]: e.nativeEvent.text })
+    }
 
     return (
         <View style={styles.viewForm}>
             <Input
                 placeholder="Nombre del restaurante..."
+                defaultFormValues={formData.name}
+                onChange={(e) => onChange(e, "name")}
+                errorMessage={errorName}
             />
             <Input
                 placeholder="Dirección del restaurante..."
+                defaultFormValues={formData.address}
+                onChange={(e) => onChange(e, "address")}
+                errorMessage={errorAddress}
             />
             <Input
                 keyboardType="email-address"
                 placeholder="Email del restaurante..."
+                defaultFormValues={formData.email}
+                onChange={(e) => onChange(e, "email")}
+                errorMessage={errorEmail}
             />
             <View style={styles.phoneView}>
                 <CountryPicker
@@ -47,6 +76,11 @@ function FormAdd() {
                     containerStyle={styles.countryPicker}
                     countryCode={country}
                     onSelect={(country) => {
+                        setFormData({
+                            ...formData,
+                            "country": country.cca2,
+                            "callingCode": country.callingCode[0]
+                        })
                         setCountry(country.cca2)
                         setCallingCode(country.callingCode[0])
                     }}
@@ -55,14 +89,34 @@ function FormAdd() {
                     placeholder="WhatsApp del restaurante..."
                     keyboardType="phone-pad"
                     containerStyle={styles.inputPhone}
+                    defaultFormValues={formData.phone}
+                    onChange={(e) => onChange(e, "phone")}
+                    errorMessage={errorPhone}
                 />
             </View>
             <Input
-                    placeholder="Descripción del restaurante..."
-                    multiline
-                    containerStyle={styles.textArea}
-                />
+                placeholder="Descripción del restaurante..."
+                multiline
+                containerStyle={styles.textArea}
+                defaultFormValues={formData.description}
+                onChange={(e) => onChange(e, "description")}
+                errorMessage={errorDescription}
+            />
         </View>)
+}
+
+const defaultFormValues = () => {
+
+    return {
+        name: "",
+        description: "",
+        email: "",
+        phone: "",
+        address: "",
+        country: "CO",
+        callingCode: "57"
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -78,7 +132,7 @@ const styles = StyleSheet.create({
     },
     phoneView: {
         width: "80%",
-    flexDirection: "row"
+        flexDirection: "row"
     },
     inputPhone: {
         width: "80%"
