@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Alert } from 'react-native'
 import { Button, Input, Icon, Avatar } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
-import { map, size } from 'lodash'
+import { map, size, filter } from 'lodash'
 import { loadImageFromGallery } from '../../utils/helpers'
 
 export default function AddRestaurantForm({ toastRef, setLoading, navigation }) {
@@ -50,11 +50,36 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
 
     const imageSelect = async () => {
         const response = await loadImageFromGallery([4, 3])
-        if(!response.status){
+        if (!response.status) {
             toastRef.current.show("No has seleccionado ninguna imagen.", 3000)
             return
         }
         setImagesSelected([...imagesSelected, response.image])
+    }
+
+    const removeImage = (image) => {
+        Alert.alert(
+            "Eliminar Imagen",
+            "¿Estas seguro que quieres la imagen?",
+            [
+
+            {
+                text: "No",
+                style: "Cancel"
+            },
+            {
+                text: "Sí",
+                onPress: () => {
+                    setImagesSelected(
+                        filter(imagesSelected, (imageUrl) => imageUrl !== image)
+                    )
+                }
+            }
+            ],
+            {
+                cancelable: true
+            }
+        )
     }
 
     return (
@@ -79,6 +104,7 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
                         key={index}
                         style={styles.miniatureStyle}
                         source={{ uri: imageRestaurant }}
+                        onPress={() => removeImage(imageRestaurant)}
                     />
                 ))
             }
