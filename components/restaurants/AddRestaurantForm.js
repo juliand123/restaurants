@@ -4,9 +4,11 @@ import { Button, Input, Icon, Avatar, Image } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
 import { map, size, filter, isEmpty } from 'lodash'
 import MapView from 'react-native-maps'
+import uuid from 'random-uuid-v4'
 
 import Modal from '../../components/Modal'
 import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
+import { uploadImage } from '../../utils/actions'
 
 
 const widthScreen = Dimensions.get("window").width
@@ -23,12 +25,32 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
     const [isVisibleMap, setIsVisibleMap] = useState(false)
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
-    const addRestaurant = () => {
+    const addRestaurant = async () => {
         if (!validForm()) {
             return
         }
+
+        setLoading(true)
+        const response = await uploadImages()
+        console.log(response)
+        setLoading(false)
         console.log(formData)
     }
+
+    const uploadImages = async () => {
+        const imagesUrl = []
+        await Promise.all(
+            map(imagesSelected, async(image) =>{
+                const response = await uploadImage(image, "restaurants", uuid())
+                if(response.statusResponse){
+                    imagesUrl.push(response.url)
+                }
+            })
+
+        )
+        return imagesUrl
+    }
+
     const validForm = () => {
         clearErrors()
         let isValid = true
@@ -47,7 +69,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
             isValid = false
         }
 
-        if (size(formData.phone)<10) {
+        if (size(formData.phone) < 10) {
             setErrorPhone("Debes ingresar un teléfono de restaurante válido...")
             isValid = false
         }
