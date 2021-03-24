@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.penagos.restaurants"
     },
     "android": {
+      "package": "com.penagos.restaurants",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyChYgDU56y00wi2tDGSHTOOtkBjLFUle94"
+        }
       },
       "permissions":[
         "CAMERA_ROLL",
