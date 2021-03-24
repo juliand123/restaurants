@@ -6,10 +6,9 @@ import { map, size, filter, isEmpty } from 'lodash'
 import MapView from 'react-native-maps'
 import uuid from 'random-uuid-v4'
 
-import Modal from '../../components/Modal'
 import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
-import { uploadImage } from '../../utils/actions'
-
+import { getCurrentUser, uploadImage, addDocumentWithoutId } from '../../utils/actions'
+import Modal from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -31,18 +30,43 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
         }
 
         setLoading(true)
-        const response = await uploadImages()
-        console.log(response)
+        const responseUploadImages = await uploadImages()
+        const restaurant = {
+            name: formData.name,
+            address: formData.address,
+            email: formData.email,
+            phone: formData.phone,
+            callingCode: formData.callingCode,
+            location: locationRestaurant,
+            images: responseUploadImages,
+            description: formData.description,
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            createAt: new Date(),
+            createBy: getCurrentUser().uid
+
+        }
+        const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)
+      
         setLoading(false)
+
+        if(!responseAddDocument.statusResponse){
+            console.log(responseAddDocument)
+            toastRef.current.show("Error al grabar el restaurante, por favor intente más tarde.", 3000)
+            return
+        }
+        navigation.navigate("restaurants")
         console.log(formData)
+        console.log(restaurant)
     }
 
     const uploadImages = async () => {
         const imagesUrl = []
         await Promise.all(
-            map(imagesSelected, async(image) =>{
+            map(imagesSelected, async (image) => {
                 const response = await uploadImage(image, "restaurants", uuid())
-                if(response.statusResponse){
+                if (response.statusResponse) {
                     imagesUrl.push(response.url)
                 }
             })
