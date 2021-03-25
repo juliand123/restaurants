@@ -108,7 +108,7 @@ export const updatePassword = async (password) => {
     return result
 }
 
-export const addDocumentWithoutId = async(collection, data) => {
+export const addDocumentWithoutId = async (collection, data) => {
     const result = { statusResponse: true, error: null }
     try {
         await db.collection(collection).add(data)
@@ -116,5 +116,24 @@ export const addDocumentWithoutId = async(collection, data) => {
         result.statusResponse = false
         result.error = error
     }
-    return result     
-}   
+    return result
+}
+
+export const getRestaurants = async (limitRestaurants) => {
+    const result = { statusResponse: true, error: null, restaurants: [], startRestaurant: null }
+    try {
+        const response = await db.collection("restaurants").orderBy("createAt", "desc").limit(limitRestaurants).get()
+        if (response.docs.length > 0) {
+            result.startRestaurant = response.docs[response.docs.length - 1]
+        }
+        response.forEach((doc) => {
+            const restaurant = doc.data()
+            restaurant.id = doc.id
+            result.restaurants.push(restaurant)
+        })
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result
+}
