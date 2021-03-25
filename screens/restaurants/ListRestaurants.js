@@ -3,12 +3,17 @@ import React from 'react'
 import { ActivityIndicator, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native'
 import { Image } from 'react-native-elements'
 
-export default function ListRestaurants({ restaurants, navigation }) {
+import { formatPhone } from '../../utils/helpers'
+
+
+export default function ListRestaurants({ restaurants, navigation, handleLoadMore }) {
     return (
         <View>
             <FlatList
                 data={restaurants}
                 keyExtractor={(item, index) => index.toString()}
+                onEndReachedThreshold={0.5}
+                onEndReached={handleLoadMore}
                 renderItem={(restaurant) => (
                     <Restaurant restaurant={restaurant} navigation={navigation} />
                 )}
@@ -17,7 +22,7 @@ export default function ListRestaurants({ restaurants, navigation }) {
     )
 }
 
-function Restaurant({ restaurant, navigation }) {
+function Restaurant({ restaurant, navigation, handleLoadMore }) {
     const { id, images, name, address, description, phone, callingCode } = restaurant.item
     const imageRestaurant = images[0]
 
@@ -36,7 +41,7 @@ function Restaurant({ restaurant, navigation }) {
                 <View>
                     <Text style={styles.restaurantTitle}> {name} </Text>
                     <Text style={styles.restaurantInformation}> {address} </Text>
-                    <Text style={styles.restaurantInformation}> +{callingCode}-{phone} </Text>
+                    <Text style={styles.restaurantInformation}> {formatPhone(callingCode, phone)} </Text>
                     <Text style={styles.restaurantDescription}>
                         {
                             size(description) > 0 ?

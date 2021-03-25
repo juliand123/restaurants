@@ -6,7 +6,7 @@ import firebase from 'firebase/app'
 import { size } from 'lodash'
 
 import Loading from '../../components/Loading'
-import { getRestaurants } from '../../utils/actions'
+import { getMoreRestaurants, getRestaurants } from '../../utils/actions'
 import ListRestaurants from './ListRestaurants'
 
 
@@ -17,7 +17,7 @@ export default function Restaurants({ navigation }) {
     const [loading, setLoading] = useState(false)
 
     const limitRestaurants = 7
-    
+
     useEffect(() => {
         firebase.auth().onAuthStateChanged((userInfo) => {
             userInfo ? setUser(true) : setUser(false)
@@ -37,6 +37,19 @@ export default function Restaurants({ navigation }) {
         }, [])
     )
 
+    const handleLoadMore = async () => {
+        if (!startRestaurant) {
+            return
+        }
+        setLoading(true)
+        const response = await getMoreRestaurants(limitRestaurants, startRestaurant)
+        if (response.statusResponse) {
+            setStartRestaurant(response.startRestaurant)
+            setRestaurants([...restaurants, response.restaurants])
+        }
+        setLoading(false)
+    }
+
     if (user === null) {
         return <Loading isVisible={true} text="Cargando..." />
     }
@@ -48,6 +61,7 @@ export default function Restaurants({ navigation }) {
                 <ListRestaurants
                     restaurants={restaurants}
                     navigation={navigation}
+                    handleLoadMore={handleLoadMore}
                 />
             )
                 : (
@@ -83,13 +97,13 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5
 
     },
-    notFoundView:{
+    notFoundView: {
         flex: 1,
-        justifyContent:"center",
+        justifyContent: "center",
         alignItems: "center"
     },
-    notFoundText:{
-        fontSize: 18, 
-        fontWeight:"bold"
+    notFoundText: {
+        fontSize: 18,
+        fontWeight: "bold"
     }
 })
