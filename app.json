@@ -32,6 +32,7 @@
         }
       },
       "permissions":[
+        "MEDIA_LIBRARY",
         "CAMERA_ROLL",
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
