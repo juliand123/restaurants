@@ -7,7 +7,7 @@ import { size } from 'lodash'
 
 import Loading from '../../components/Loading'
 import { getMoreRestaurants, getRestaurants } from '../../utils/actions'
-import ListRestaurants from './ListRestaurants'
+import ListRestaurants from '../../components/restaurants/ListRestaurants'
 
 
 export default function Restaurants({ navigation }) {
