@@ -16,7 +16,7 @@ export default function Restaurants({ navigation }) {
     const [restaurants, setRestaurants] = useState([])
     const [loading, setLoading] = useState(false)
 
-    const limitRestaurants = 7
+    const limitRestaurants = 10
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged((userInfo) => {
@@ -45,7 +45,7 @@ export default function Restaurants({ navigation }) {
         const response = await getMoreRestaurants(limitRestaurants, startRestaurant)
         if (response.statusResponse) {
             setStartRestaurant(response.startRestaurant)
-            setRestaurants([...restaurants, response.restaurants])
+            setRestaurants([...restaurants, ...response.restaurants])
         }
         setLoading(false)
     }
@@ -54,21 +54,21 @@ export default function Restaurants({ navigation }) {
         return <Loading isVisible={true} text="Cargando..." />
     }
 
-
     return (
         <View style={styles.viewBody}>
-            {size(restaurants) > 0 ? (
-                <ListRestaurants
-                    restaurants={restaurants}
-                    navigation={navigation}
-                    handleLoadMore={handleLoadMore}
-                />
-            )
-                : (
+            {
+                size(restaurants) > 0 ? (
+                    <ListRestaurants
+                        restaurants={restaurants}
+                        navigation={navigation}
+                        handleLoadMore={handleLoadMore}
+                    />
+                ) : (
                     <View style={styles.notFoundView}>
                         <Text style={styles.notFoundText}>No hay restaurantes registrados.</Text>
                     </View>
-                )}
+                )
+            }
             {
                 user && (<Icon
                     type="material-community"
