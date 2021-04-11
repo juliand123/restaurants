@@ -5,7 +5,7 @@ import { map } from 'lodash'
 import Modal from '../Modal'
 import ChangeDisplayNameForm from './ChangeDisplayNameForm'
 import ChangeEmailForm from './ChangeEmailForm'
-import ChangePasswordForm from '../../screens/account/ChangePasswordForm'
+import ChangePasswordForm from './ChangePasswordForm'
 
 export default function AccountOptions({ user, toastRef, setReloadUser }) {
 
