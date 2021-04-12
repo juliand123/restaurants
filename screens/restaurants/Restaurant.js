@@ -5,9 +5,10 @@ import { map } from 'lodash'
 
 import { getDocumentById } from '../../utils/actions'
 import { formatPhone } from '../../utils/helpers'
-import CarouselIImages from '../CarouselIImages'
-import Loading from '../Loading'
-import MapRestaurant from './MapRestaurant'
+import CarouselIImages from '../../components/CarouselIImages'
+import Loading from '../../components/Loading'
+import MapRestaurant from '../../components/restaurants/MapRestaurant'
+import ListReviews from '../../components/restaurants/ListReviews'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -54,7 +55,10 @@ export default function Restaurant({ navigation, route }) {
                 address={restaurant.address}
                 email={restaurant.email}
                 phone={formatPhone(restaurant.callingCode, restaurant.phone)}
-
+            />
+            <ListReviews
+                navigation={navigation}
+                idRestaurant={restaurant.id}
             />
 
         </ScrollView>
@@ -141,18 +145,18 @@ const styles = StyleSheet.create({
     nameRestaurant: {
         fontWeight: "bold"
     },
-    viewRestaurantsInfo:{
+    viewRestaurantsInfo: {
         margin: 15,
         marginTop: 25
     },
-    restaurantInfoTitle:{
+    restaurantInfoTitle: {
         fontSize: 20,
         fontWeight: "bold",
         marginBottom: 15
     },
-    containerListItem:{
+    containerListItem: {
         borderBottomColor: "#a376c7",
-        borderBottomWidth: 1 
+        borderBottomWidth: 1
     }
 
 
