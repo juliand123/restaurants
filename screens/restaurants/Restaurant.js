@@ -6,7 +6,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app'
 import Toast from 'react-native-easy-toast'
 
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, isUserLogged } from '../../utils/actions'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, isUserLogged, deleteFavorite } from '../../utils/actions'
 import { formatPhone } from '../../utils/helpers'
 import CarouselIImages from '../../components/CarouselIImages'
 import Loading from '../../components/Loading'
@@ -32,8 +32,6 @@ export default function Restaurant({ navigation, route }) {
 
     navigation.setOptions({ title: name })
 
-
-
     useFocusEffect(
         useCallback(() => {
             (async () => {
@@ -44,24 +42,22 @@ export default function Restaurant({ navigation, route }) {
                     setRestaurant({})
                     Alert.alert("Ocurrió un problema cargando el restaurante, intente más tarde.")
                 }
-
-                const response2 = await getIsFavorite(restaurant.id)
-                response2.statusResponse && setIsFavorite(response2.isFavorite)
             })()
         }, [])
     )
 
-    // useEffect(() => {
-    //     (async()=>{
-    //         if(userLogged && restaurant){
-    //             const response = await getIsFavorite(restaurant.id)
-    //             response.statusResponse && setIsFavorite(response.isFavorite)
-    //         }
-    //     })
-    // }, [])
+    useEffect(() => {
+        (async () => {
+            if (userLogged && restaurant) {
+                const response = await getIsFavorite(restaurant.id)
+                response.statusResponse && setIsFavorite(response.isFavorite)
+            }
+        })()
+    }, [userLogged, restaurant])
+
 
     const addFavorite = async () => {
-        if (!isUserLogged) {
+        if (!userLogged) {
             toastRef.current.show("Para agregar el restaurante a favoritos debes esar logueado.", 3000)
             return
         }
@@ -77,11 +73,19 @@ export default function Restaurant({ navigation, route }) {
         } else {
             toastRef.current.show("No se pudo adicionar el restaurante a favoritos.", 3000)
         }
-        console.log("guardaddddddddddddddddddddddoooooooooooooo")
+       
     }
 
-    const removeFavorite = () => {
-        console.log("remove favorite...")
+    const removeFavorite = async () => {
+       setLoading(true)
+       const response = await deleteFavorite(restaurant.id)
+       setLoading(false)
+       if (response.statusResponse) {
+        setIsFavorite(false)
+        toastRef.current.show("Restaurante eliminado de favoritos.", 3000)
+    } else {
+        toastRef.current.show("No se pudo eliminar el restaurante de favoritos.", 3000)
+    }
     }
 
 
