@@ -7,7 +7,7 @@ import firebase from 'firebase/app'
 import Toast from 'react-native-easy-toast'
 
 import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, isUserLogged, deleteFavorite } from '../../utils/actions'
-import { formatPhone } from '../../utils/helpers'
+import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import CarouselIImages from '../../components/CarouselIImages'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
@@ -24,9 +24,11 @@ export default function Restaurant({ navigation, route }) {
     const [activeSlide, setActiveSlide] = useState(0)
     const [isFavorite, setIsFavorite] = useState(false)
     const [userLogged, setUserLogged] = useState(false)
+    const [currentUser, setCurrentUser] = useState(null)
 
     firebase.auth().onAuthStateChanged(user => {
         user ? setUserLogged(true) : setUserLogged(false)
+        setCurrentUser(user)
     })
 
 
@@ -73,19 +75,19 @@ export default function Restaurant({ navigation, route }) {
         } else {
             toastRef.current.show("No se pudo adicionar el restaurante a favoritos.", 3000)
         }
-       
+
     }
 
     const removeFavorite = async () => {
-       setLoading(true)
-       const response = await deleteFavorite(restaurant.id)
-       setLoading(false)
-       if (response.statusResponse) {
-        setIsFavorite(false)
-        toastRef.current.show("Restaurante eliminado de favoritos.", 3000)
-    } else {
-        toastRef.current.show("No se pudo eliminar el restaurante de favoritos.", 3000)
-    }
+        setLoading(true)
+        const response = await deleteFavorite(restaurant.id)
+        setLoading(false)
+        if (response.statusResponse) {
+            setIsFavorite(false)
+            toastRef.current.show("Restaurante eliminado de favoritos.", 3000)
+        } else {
+            toastRef.current.show("No se pudo eliminar el restaurante de favoritos.", 3000)
+        }
     }
 
 
@@ -125,6 +127,7 @@ export default function Restaurant({ navigation, route }) {
                 address={restaurant.address}
                 email={restaurant.email}
                 phone={formatPhone(restaurant.callingCode, restaurant.phone)}
+                currentUser={currentUser}
             />
             <ListReviews
                 navigation={navigation}
@@ -136,12 +139,38 @@ export default function Restaurant({ navigation, route }) {
     )
 }
 
-function RestaurantInfo({ name, location, address, email, phone }) {
+function RestaurantInfo({ name, location, address, email, phone, currentUser }) {
     const listInfo = [
-        { text: address, iconName: "map-marker" },
-        { text: phone, iconName: "phone" },
-        { text: email, iconName: "at" }
+        { type: "address", text: address, iconLeft: "map-marker" },
+        { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
+        { type: "email", text: email, iconLeft: "at", actionLeft: "sendEmail" }
     ]
+
+    const actionLeft = (type) => {
+        console.log("left", type)
+        if (type == "phone") {
+            callNumber(phone)
+        }
+        else if (type == "email") {
+            if (currentUser) {
+               sendEmail(email, "interesado", `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
+            }else{
+                sendEmail(email, "interesado", `Estoy interesado en sus servicios.`)
+            }
+        }
+    }
+
+
+    const actionRight = (type) => {
+      if (type == "phone"){
+        if (currentUser) {
+            sendWhatsApp(phone, `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
+         }else{
+            sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
+         }
+      }
+    }
+
     return (
         <View style={styles.viewRestaurantsInfo}>
             <Text style={styles.restaurantInfoTitle}>
@@ -160,14 +189,24 @@ function RestaurantInfo({ name, location, address, email, phone }) {
                     >
                         <Icon
                             type="material-community"
-                            name={item.iconName}
+                            name={item.iconLeft}
                             color={"#df0024"}
+                            onPress={() => actionLeft(item.type)}
                         />
                         <ListItem.Content>
                             <ListItem.Title>
                                 {item.text}
                             </ListItem.Title>
                         </ListItem.Content>
+                        {
+                            item.iconRight && (<Icon
+                                type="material-community"
+                                name={item.iconRight}
+                                color={"#df0024"}
+                                onPress={() => actionRight(item.type)}
+                            />
+                            )
+                        }
                     </ListItem>
                 ))
             }

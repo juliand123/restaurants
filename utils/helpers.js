@@ -79,3 +79,4 @@ export const sendWhatsApp = (phoneNumber, text) => {
 export const sendEmail = (to, subject, body) => {
     Linking.openURL(`mailto:${to}?subject=${subject}&body=${body}`)
 }   
+
