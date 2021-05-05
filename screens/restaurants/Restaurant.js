@@ -141,7 +141,7 @@ export default function Restaurant({ navigation, route }) {
 
 function RestaurantInfo({ name, location, address, email, phone, currentUser }) {
     const listInfo = [
-        { type: "address", text: address, iconLeft: "map-marker" },
+        { type: "address", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
         { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
         { type: "email", text: email, iconLeft: "at", actionLeft: "sendEmail" }
     ]
@@ -168,7 +168,10 @@ function RestaurantInfo({ name, location, address, email, phone, currentUser }) 
          }else{
             sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
          }
-      }
+      }else
+      if (type =="address"){
+        console.log("send push notification")
+      } 
     }
 
     return (
