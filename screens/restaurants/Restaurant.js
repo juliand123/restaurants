@@ -6,7 +6,14 @@ import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app'
 import Toast from 'react-native-easy-toast'
 
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, isUserLogged, deleteFavorite } from '../../utils/actions'
+import { addDocumentWithoutId, 
+    getCurrentUser, 
+    getDocumentById, 
+    getIsFavorite, 
+    isUserLogged, 
+    deleteFavorite, 
+    sendPushNotification, 
+    setNotificationMessage } from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import CarouselIImages from '../../components/CarouselIImages'
 import Loading from '../../components/Loading'
@@ -128,6 +135,7 @@ export default function Restaurant({ navigation, route }) {
                 email={restaurant.email}
                 phone={formatPhone(restaurant.callingCode, restaurant.phone)}
                 currentUser={currentUser}
+                setLoading={setLoading}
             />
             <ListReviews
                 navigation={navigation}
@@ -139,7 +147,7 @@ export default function Restaurant({ navigation, route }) {
     )
 }
 
-function RestaurantInfo({ name, location, address, email, phone, currentUser }) {
+function RestaurantInfo({ name, location, address, email, phone, currentUser, setLoading }) {
     const listInfo = [
         { type: "address", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
         { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
@@ -153,8 +161,8 @@ function RestaurantInfo({ name, location, address, email, phone, currentUser }) 
         }
         else if (type == "email") {
             if (currentUser) {
-               sendEmail(email, "interesado", `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
-            }else{
+                sendEmail(email, "interesado", `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
+            } else {
                 sendEmail(email, "interesado", `Estoy interesado en sus servicios.`)
             }
         }
@@ -162,16 +170,43 @@ function RestaurantInfo({ name, location, address, email, phone, currentUser }) 
 
 
     const actionRight = (type) => {
-      if (type == "phone"){
-        if (currentUser) {
-            sendWhatsApp(phone, `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
-         }else{
-            sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
-         }
-      }else
-      if (type =="address"){
-        console.log("send push notification")
-      } 
+        if (type == "phone") {
+            if (currentUser) {
+                sendWhatsApp(phone, `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
+            } else {
+                sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
+            }
+        } else
+            if (type == "address") {
+                sendNotification()
+            }
+    }
+    const sendNotification = async () => {
+        setLoading(true)
+        const resultToken = await getDocumentById("users", getCurrentUser().uid)
+        if (!resultToken) {
+            setLoading(false)
+            Alert.alert("No se pudo obtener el token del usuario.")
+            return
+        }
+
+        const messageNotification = setNotificationMessage(
+            resultToken.document.token,
+                `Título de prueba`,
+                `Mensaje de prueba`,
+                { data: `Data de prueba` }
+
+        )
+        const response = await sendPushNotification(messageNotification)
+        setLoading(false)
+
+        if(response){
+            Alert.alert("Se ha enviado el mensaje.")
+        }
+        else
+        {
+            Alert.alert("Ocurrió un problema enviando el mensaje.")
+        }
     }
 
     return (
