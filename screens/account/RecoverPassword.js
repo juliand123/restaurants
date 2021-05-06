@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 import Loading from '../../components/Loading'
+import { sendEmailResetPassword } from '../../utils/actions'
 import { validateEmail } from '../../utils/helpers'
 
 export default function RecoverPassword({ navigation }) {
@@ -10,11 +11,22 @@ export default function RecoverPassword({ navigation }) {
     const [errorEmail, setErrorEmail] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         if (!validateData()) {
             return
         }
-      
+        setLoading(true)
+        const result = await sendEmailResetPassword(email)
+        setLoading(false)
+
+        if (!result.statusResponse) {
+            Alert.alert("Error", "Este correo no está relacionado a ningún usuario.")
+            return
+        }
+
+        Alert.alert("Confirmación", "Se le ha enviado un email con las instrucciones para cambiar la contraseña.")
+        navigation.navigate("account", { screen: "login" })
+
     }
 
     const validateData = () => {
@@ -58,24 +70,24 @@ export default function RecoverPassword({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    formContainer:{
+    formContainer: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 30
     },
-    inputForm:{
+    inputForm: {
         width: "90%"
     },
-    btnContainer:{
+    btnContainer: {
         marginTop: 20,
         width: "85%",
         alignSelf: "center"
     },
-    btnRecover:{
+    btnRecover: {
         backgroundColor: "#df0024"
     },
-    icon:{
-        color:"#c1c1c1"
+    icon: {
+        color: "#c1c1c1"
     }
 })
