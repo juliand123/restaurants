@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "597627807584",
+    "project_id": "restaurants-1d885",
+    "storage_bucket": "restaurants-1d885.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597627807584:android:a33780e07d66bf5bf0a005",
+        "android_client_info": {
+          "package_name": "com.penagos.restaurants"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597627807584-8l054c6fb3c36tmfvf385570r7u921p8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.penagos.restaurants",
+            "certificate_hash": "1e19b1c8511faa56e28f260ae003f827b61f9920"
+          }
+        },
+        {
+          "client_id": "597627807584-fggdfpi95haiog5ac1ovdvcvf2ml0t4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChYgDU56y00wi2tDGSHTOOtkBjLFUle94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597627807584-fggdfpi95haiog5ac1ovdvcvf2ml0t4d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "597627807584-qaalsjr2np3udtnblm0jjmacsudmergn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.penagos.restaurants"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

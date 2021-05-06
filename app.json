@@ -18,10 +18,17 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.penagos.restaurants"
+      "bundleIdentifier": "com.penagos.restaurants",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.597627807584-qaalsjr2np3udtnblm0jjmacsudmergn"
+        }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "com.penagos.restaurants",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
