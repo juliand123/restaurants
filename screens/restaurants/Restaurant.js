@@ -197,7 +197,6 @@ function SendMessage({ modalNotification, setModalNotification, setLoading, rest
         )
 
         setLoading(false)
-        Alert.alert("Se ha enviado el mensaje.")
         setTitle(null)
         setMessage(null)
         setModalNotification(false)
